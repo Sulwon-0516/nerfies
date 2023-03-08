@@ -105,6 +105,11 @@ def compute_elastic_loss(jacobian, eps=1e-6, loss_type='log_svals'):
   elif loss_type == 'nr':
     rot = nearest_rotation_svd(jacobian)
     sq_residual = jnp.sum((jacobian - rot) ** 2)
+  elif loss_type == 'defreg':
+    det = jnp.linalg.det(jacobian)
+    det[det>0] *= 0
+    loss = -det
+    return loss, loss
   else:
     raise NotImplementedError(
         f'Unknown elastic loss type {loss_type!r}')
